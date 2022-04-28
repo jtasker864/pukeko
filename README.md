@@ -18,3 +18,5 @@ python3 -m pip install slackclient slackeventsapi Flask
 python3 run.py
 
 Should close and create a config.txt file eventually to add tokens to manually
+
+Add the parameters and ADD TO THE CHANNEL MENTIONED

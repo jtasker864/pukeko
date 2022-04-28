@@ -4,8 +4,10 @@ from slack import WebClient
 
 class PukekoBot:
     
-    def __init__(self, token):
+    def __init__(self, start_channel, token):
         self.web_client = WebClient(token=token)
+        payload = self._get_payload(start_channel, ["ayo"])
+        self._send_payload(payload)
 
     #Basic messaging functionality
     
@@ -40,7 +42,7 @@ class PukekoBot:
         site_list = ["https://www.google.com/", "https://urbanintelligence.co.nz/", "http://fakesitedoesntexist.com/"]
         statuses = ""
         for site in site_list:
-            status = self._test_status(site)
+            status = self._test_site_status(site)
             statuses += site + ': ' + status + "\n"
         payload = self._get_payload(channel, ["Server Statuses:", statuses])
         self._send_payload(payload)

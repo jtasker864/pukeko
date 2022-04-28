@@ -8,11 +8,12 @@ def read_config():
     config_file = open("config.txt")
     lines = config_file.read().splitlines()
     line_parts = [line.split() for line in lines]
-    oauth = line_parts[0][1]
-    signing = line_parts[1][1]
-    return oauth, signing
+    start_channel = line_parts[0][1]
+    oauth = line_parts[1][1]
+    signing = line_parts[2][1]
+    return start_channel, oauth, signing
 
-oauth, signing = read_config()
+start_channel, oauth, signing = read_config()
 
 # Initialize a Flask app to host the events adapter
 app = Flask(__name__)
@@ -20,7 +21,7 @@ app = Flask(__name__)
 # Create an events adapter and register it to an endpoint in the slack app for event ingestion.
 slack_events_adapter = SlackEventAdapter(signing, server=app)
 
-pukeko = PukekoBot(oauth)
+pukeko = PukekoBot(start_channel, oauth)
 
 # When a 'message' event is detected by the events adapter, forward that payload
 # to this function.
@@ -35,7 +36,7 @@ def message(payload):
 
     # Get the text from the event that came through
     text = event.get("text")
-    
+
     if text is not None and "pukeko" in text.lower():
         channel_id = event.get("channel")
         return pukeko.process_message(channel_id, text)
