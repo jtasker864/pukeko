@@ -134,6 +134,17 @@ class PukekoBot:
         except SyntaxError: 
             payload = self._get_payload(channel, ["that's some invalid syntax my dude"])
             self._send_payload(payload)
+        
+    def _list_sites(self, channel):
+        sites_str = ""
+        for site in self.sites:
+            sites_str += site.get("site") + " - " + site.get("description") + " - "
+            if site.get("test-regularly"):
+                sites_str += "Checking regularly"
+            else:
+                sites_str += "Not checking"
+        payload = self._get_payload(channel, ["Sites:", sites_str])
+        self._send_payload(payload)
 
     #Public functions
 
@@ -144,11 +155,14 @@ class PukekoBot:
             self._list_statuses(channel)
         elif text.startswith("pukeko add "):
             self._add_site(channel, text)
+        elif text == "pukeko list":
+            self._list_sites(channel)
 
 if __name__ == "__main__":
     pukeko = PukekoBot("#start", "authc00de", connect=False)
     pukeko.process_message("#test", "nothing")
     pukeko.process_message("#test", "pukeko")
     pukeko.process_message("#test", "hi pukeko")
-    pukeko.process_message("#test", "pukeko status")
+    #pukeko.process_message("#test", "pukeko status")
+    pukeko.process_message("#test", "pukeko list")
     #pukeko.process_message("#test", "pukeko add \"google.com\" \"description here\" true")
