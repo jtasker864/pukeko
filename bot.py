@@ -19,6 +19,8 @@ class PukekoBot:
         }
     
     def _send_payload(self, payload):
+        print("Sending:")
+        print(payload)
         self.web_client.chat_postMessage(**payload)
 
     #Specific command functionality
@@ -50,8 +52,8 @@ class PukekoBot:
     #Public functions
 
     def process_message(self, channel, text):
-        if self.text == "hi pukeko":
+        if text == "hi pukeko":
             return self._say_hi(channel)
-        elif self.text == "pukeko status":
+        elif text == "pukeko status":
             return self._list_statuses(channel)
         
