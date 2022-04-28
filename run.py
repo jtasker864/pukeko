@@ -37,9 +37,6 @@ def message(payload):
     text = event.get("text")
     
     channel_id = event.get("channel")
-    user = event.get("user")
-
-    print("Something was messaged on " + channel_id + " by " + user)
 
     if text is not None and "pukeko" in text.lower():
         return pukeko.process_message(channel_id, text)
