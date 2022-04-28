@@ -11,7 +11,7 @@ app = Flask(__name__)
 slack_events_adapter = SlackEventAdapter("89f2088835b23f7f0083ad2009e61c81", "/slack/events", app)
 
 # Initialize a Web API client
-slack_web_client = WebClient(token="xoxb-522742488742-3430285821799-aaDOCg3oX8J0DEZpmrIWcwBA")
+slack_web_client = WebClient(token="xoxb-522742488742-3430285821799-clIo2ILjiCWxfbrDSuYHAWXm")
 
 def start_pukeko(channel, text):
     # Get a new CoinBot
