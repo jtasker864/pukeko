@@ -21,8 +21,6 @@ class PukekoBot:
         }
     
     def _send_payload(self, payload):
-        print("Sending:")
-        print(payload)
         self.web_client.chat_postMessage(**payload)
 
     #Specific command functionality

@@ -30,15 +30,18 @@ def message(payload):
     """Parse the message event, and if the activation string is in the text,
     simulate a coin flip and send the result.
     """
-    print("Something was messaged")
     # Get the event data from the payload
     event = payload.get("event", {})
 
     # Get the text from the event that came through
     text = event.get("text")
+    
+    channel_id = event.get("channel")
+    user = event.get("user")
+
+    print("Something was messaged on " + channel_id + " by " + user)
 
     if text is not None and "pukeko" in text.lower():
-        channel_id = event.get("channel")
         return pukeko.process_message(channel_id, text)
 
 
