@@ -10,6 +10,7 @@ Holds all the functions to process the commands pukekobot recieves.
 Commands:
 hi pukeko - replies to you
 pukeko status - Checks the statuses of online sites and posts the results
+pukeko add "SITE" "DESCRIPTION" CHECKREGULARLY
 
 # Installation
 wget https://bootstrap.pypa.io/pip/3.6/get-pip.py
