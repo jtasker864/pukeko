@@ -10,6 +10,7 @@ class PukekoBot:
         self._check_sites_file()
         for site in self.sites:
             print(site)
+
         self.web_client = WebClient(token=token)
         payload = self._get_payload(start_channel, ["ayo"])
         self._send_payload(payload)
@@ -89,4 +90,5 @@ class PukekoBot:
         elif text == "pukeko status":
             return self._list_statuses(channel)
 
-pukeko = PukekoBot("", "")
+if __name__ == "__main__":
+    pukeko = PukekoBot("", "")
