@@ -6,12 +6,11 @@ import json
 
 class PukekoBot:
     
-    def __init__(self, start_channel, token):
+    def __init__(self, start_channel, token, connect=True):
         self._check_sites_file()
-        for site in self.sites:
-            print(site)
-
-        self.web_client = WebClient(token=token)
+        self.connect = connect
+        if connect:
+            self.web_client = WebClient(token=token)
         payload = self._get_payload(start_channel, ["ayo"])
         self._send_payload(payload)
 
@@ -26,6 +25,7 @@ class PukekoBot:
         self._update_sites(f)
 
     def _create_sites_file(self):
+        print("CREATING JSON SITES FILE")
         content = \
             {
                 "sites": [
@@ -55,7 +55,10 @@ class PukekoBot:
         }
     
     def _send_payload(self, payload):
-        self.web_client.chat_postMessage(**payload)
+        if self.connect:
+            self.web_client.chat_postMessage(**payload)
+        else:
+            print(payload)
 
     #Specific command functionality
 
@@ -74,7 +77,7 @@ class PukekoBot:
         statuses = ""
         for site in self.sites:
             status = self._test_site_status(site.get("site"))
-            statuses += site + ': ' + status + "\n"
+            statuses += site.get("site") + ': ' + status + "\n"
         payload = self._get_payload(channel, ["Server Statuses:", statuses])
         self._send_payload(payload)
 
@@ -91,4 +94,8 @@ class PukekoBot:
             return self._list_statuses(channel)
 
 if __name__ == "__main__":
-    pukeko = PukekoBot("", "")
+    pukeko = PukekoBot("#start", "authc00de", connect=False)
+    pukeko.process_message("#test", "nothing")
+    pukeko.process_message("#test", "pukeko")
+    pukeko.process_message("#test", "hi pukeko")
+    pukeko.process_message("#test", "pukeko status")
