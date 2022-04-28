@@ -1,28 +1,26 @@
 import logging
 from flask import Flask
-from slack import WebClient
+# from slack import WebClient
 from slackeventsapi import SlackEventAdapter
 from bot import PukekoBot
+
+def read_config():
+    config_file = open("config.txt")
+    lines = config_file.read().splitlines()
+    line_parts = [line.split() for line in lines]
+    oauth = line_parts[0][1]
+    signing = line_parts[1][1]
+    return oauth, signing
+
+oauth, signing = read_config()
 
 # Initialize a Flask app to host the events adapter
 app = Flask(__name__)
 
 # Create an events adapter and register it to an endpoint in the slack app for event ingestion.
-slack_events_adapter = SlackEventAdapter("89f2088835b23f7f0083ad2009e61c81", "/slack/events", app)
+slack_events_adapter = SlackEventAdapter(signing, server=app)
 
-# Initialize a Web API client
-slack_web_client = WebClient(token="xoxb-522742488742-3430285821799-clIo2ILjiCWxfbrDSuYHAWXm")
-
-def start_pukeko(channel, text):
-    # Get a new CoinBot
-    pukeko = PukekoBot(channel, text)
-
-    # Get the onboarding message payload
-    message = pukeko.get_message_payload()
-
-    # Post the onboarding message in Slack
-    if(message is not None):
-        slack_web_client.chat_postMessage(**message)
+pukeko = PukekoBot(oauth)
 
 # When a 'message' event is detected by the events adapter, forward that payload
 # to this function.
@@ -40,14 +38,14 @@ def message(payload):
 
     # Check and see if the activation phrase was in the text of the message.
     # If so, execute the code to flip a coin.
-    if "pukeko" in text.lower():
+    if text is not None and "pukeko" in text.lower():
         # Since the activation phrase was met, get the channel ID that the event
         # was executed on
         channel_id = event.get("channel")
 
-        # Execute the flip_coin function and send the results of
-        # flipping a coin to the channel
-        return start_pukeko(channel_id, text)
+        return pukeko.process_message(channel_id, text)
+
+
 
 if __name__ == "__main__":
     # Create the logging object
