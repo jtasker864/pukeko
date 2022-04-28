@@ -143,6 +143,7 @@ class PukekoBot:
                 sites_str += "Checking regularly"
             else:
                 sites_str += "Not checking"
+            sites_str += "\n"
         payload = self._get_payload(channel, ["Sites:", sites_str])
         self._send_payload(payload)
 
@@ -164,5 +165,5 @@ if __name__ == "__main__":
     pukeko.process_message("#test", "pukeko")
     pukeko.process_message("#test", "hi pukeko")
     #pukeko.process_message("#test", "pukeko status")
+    pukeko.process_message("#test", "pukeko add \"google.com\" \"description here\" true")
     pukeko.process_message("#test", "pukeko list")
-    #pukeko.process_message("#test", "pukeko add \"google.com\" \"description here\" true")
