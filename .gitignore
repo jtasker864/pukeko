@@ -1,2 +1,4 @@
 *.json
 config.txt
+
+__pycache__/
