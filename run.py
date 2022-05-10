@@ -3,6 +3,8 @@ from flask import Flask
 # from slack import WebClient
 from slackeventsapi import SlackEventAdapter
 from bot import PukekoBot
+import time
+from multiprocessing import Process
 
 def read_config():
     config_file = open("config.txt")
@@ -21,7 +23,7 @@ app = Flask(__name__)
 # Create an events adapter and register it to an endpoint in the slack app for event ingestion.
 slack_events_adapter = SlackEventAdapter(signing, server=app)
 
-pukeko = PukekoBot(start_channel, oauth)
+pukeko = PukekoBot(start_channel, oauth, is_connecting=False)
 
 # When a 'message' event is detected by the events adapter, forward that payload
 # to this function.
@@ -41,9 +43,20 @@ def message(payload):
     if text is not None and "pukeko" in text.lower():
         return pukeko.process_message(channel_id, text)
 
+def poll_sites():
+    print("Polling")
 
+
+def poll_regularly():
+    print("Starting polling")
+    while True:
+        time.sleep(3)
+        poll_sites()
 
 if __name__ == "__main__":
+    poller = Process(target = poll_regularly)
+    poller.start()
+
     # Create the logging object
     logger = logging.getLogger()
 
@@ -56,3 +69,4 @@ if __name__ == "__main__":
     # Run your app on your externally facing IP address on port 3000 instead of
     # running it on localhost, which is traditional for development.
     app.run(host='0.0.0.0', port=3000)
+    print("Closed Flask")
