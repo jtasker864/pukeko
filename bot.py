@@ -105,27 +105,49 @@ class PukekoBot:
                 "test-regularly": check_regularly
             }
 
+    #Reads a sting of form "pukeko add "SITE" "DESCRIPTION" CHECKREGULARLY"
+    #i.e. pukeko add "google.com" "google's site is probably going to be up all the time" true
     def _read_add_site_string(self, text):
-        pointer = 11 #crops out "pukeko add "
-        if text[pointer] != '\"':
+        pointer = 0
+
+        #Check for 'pukeko add "'
+        add_str = 'pukeko add \"'
+        if text[pointer:pointer + len(add_str)] != add_str:
             raise SyntaxError
-        pointer += 1
+        pointer += len(add_str)
+
+        #Seeks next " apostrophe
         after_last_quote = pointer
         while text[pointer] != "\"":
             pointer += 1
+
+        #Takes SITE contents between apostrophes
         site = text[after_last_quote:pointer]
-        if text[pointer:pointer + 3] != '\" \"':
+
+        #Check for '" "'
+        apostrophes = '\" \"'
+        if text[pointer:pointer + len(apostrophes)] != apostrophes:
             raise SyntaxError
-        pointer += 3
+        pointer += len(apostrophes)
+
+        #Seeks next " apostrophe
         after_last_quote = pointer
         while text[pointer] != "\"":
             pointer += 1
+        
+        #Takes DESCRIPTION contents between apostrophes
         description = text[after_last_quote:pointer]
-        pointer += 2
-        check_regularly_str = text[pointer:].lower()
-        if check_regularly_str != "true" and check_regularly_str != "false":
+
+         #Check for '" '
+        apostrophe = '\" '
+        if text[pointer:pointer + len(apostrophe)] != apostrophe:
             raise SyntaxError
-        check_regularly = bool(text[pointer:])
+        pointer += len(apostrophe)
+
+        #Converts rest of string to a boolean
+        check_regularly = (text[pointer:].lower() == "true")
+        if (not check_regularly) and (text[pointer:].lower() != "false"):
+            raise SyntaxError
         return site, description, check_regularly
 
 
@@ -169,4 +191,6 @@ if __name__ == "__main__":
     pukeko.process_message("#test", "hi pukeko")
     #pukeko.process_message("#test", "pukeko status")
     pukeko.process_message("#test", "pukeko add \"google.com\" \"description here\" true")
-    pukeko.process_message("#test", "pukeko list")
+    pukeko.process_message("#test", "pukeko add \"false.com\" \"false here\" false")
+    pukeko.process_message("#test", "pukeko add \"falsey.com\" \"broken\" falsey")
+    pukeko.process_message("#test", "pukeko add djsafholk23\"D\"A")
