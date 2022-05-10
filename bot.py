@@ -6,11 +6,14 @@ from xml.dom import SyntaxErr
 from slack import WebClient
 import json
 from datetime import datetime
+import time
+from multiprocessing import Process
 
 class PukekoBot:
     
     #Starts the bot by creating a sites.json file if none is there and posting "ayo"
-    def __init__(self, start_channel, token, is_connecting=True):
+    def __init__(self, start_channel, token, is_connecting=True, is_polling=False):
+        self.polling = is_polling
         self._check_sites_file()
         if is_connecting:
             self.web_client = WebClient(token=token)
@@ -104,8 +107,10 @@ class PukekoBot:
             for site, status in broken_sites:
                 statuses += self._status_string(site, status) + "\n"
             self._post("A poll at " + now_str + " found these sites down:", statuses)
+            return False
         else:
             print("All up")
+            return True
 
     def _status_string(self, site, status):
         message = None
@@ -229,6 +234,19 @@ class PukekoBot:
             sites_str += "\n"
         self._post("Sites:", sites_str, channel=channel)
 
+    def _poll_regularly(self):
+        self.polling = self.run_status_poll()
+        while self.polling:
+            time.sleep(10)
+            self.polling = self.run_status_poll()
+        self._post("Stopping polling")
+
+    def start_polling(self):
+        print("Starting polling")
+        self.polling = True
+        poller = Process(target = self._poll_regularly)
+        poller.start()
+
     #Public functions
 
     def process_message(self, channel, text):
@@ -242,6 +260,8 @@ class PukekoBot:
             self._remove_site(channel, text)
         elif text == "pukeko list":
             self._list_sites(channel)
+        elif text == "pukeko poll":
+            self.start_polling()
 
 if __name__ == "__main__":
     pukeko = PukekoBot("#start", "authc00de", is_connecting=False)
@@ -250,8 +270,11 @@ if __name__ == "__main__":
     # pukeko.process_message("#test", "hi pukeko")
     # pukeko.process_message("#test", "pukeko status")
     pukeko.process_message("#test", "pukeko list")
-    pukeko.process_message("#test", "pukeko remove -12")
-    pukeko.process_message("#test", "pukeko remove x")
+    pukeko.process_message("#test", "pukeko poll")
+    # pukeko.start_polling("#test")
+    time.sleep(600)
+    # pukeko.process_message("#test", "pukeko remove -12")
+    # pukeko.process_message("#test", "pukeko remove x")
     # pukeko.run_status_poll()
     # pukeko.process_message("#test", "pukeko status")
     # pukeko.process_message("#test", "pukeko add \"google.com\" \"description here\" true")

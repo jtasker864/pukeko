@@ -3,8 +3,6 @@ from flask import Flask
 # from slack import WebClient
 from slackeventsapi import SlackEventAdapter
 from bot import PukekoBot
-import time
-from multiprocessing import Process
 
 def read_config():
     config_file = open("config.txt")
@@ -43,20 +41,8 @@ def message(payload):
     if text is not None and "pukeko" in text.lower():
         return pukeko.process_message(channel_id, text)
 
-def poll_sites():
-    print("Polling")
-    
-
-
-def poll_regularly():
-    print("Starting polling")
-    while True:
-        time.sleep(3)
-        poll_sites()
-
 if __name__ == "__main__":
-    poller = Process(target = poll_regularly)
-    poller.start()
+    pukeko.start_polling()
 
     # Create the logging object
     logger = logging.getLogger()
