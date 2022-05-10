@@ -190,9 +190,33 @@ class PukekoBot:
             self._post("Added " + site, channel=channel)
         except SyntaxError: 
             self._post("that's some invalid syntax my dude", channel=channel)
+
+    def _read_remove_site_string(self, text):
+        pointer = 0
+
+        #Check for 'pukeko remove '
+        remove_str = 'pukeko remove '
+        if text[pointer:pointer + len(remove_str)] != remove_str:
+            raise SyntaxError
+        pointer += len(remove_str)
+
+        try:
+            index = int(text[pointer:]) - 1
+        except ValueError:
+            raise SyntaxError
+        return index
         
     def _remove_site(self, channel, text):
-        pass
+        try:
+            index = self._read_remove_site_string(text)
+            if index >= len(self.sites) or index < 0:
+                self._post("that's out of the range innit", channel=channel)
+                return
+            removed_site = self.sites.pop(index)
+            self._write_sites()
+            self._post("removed " + removed_site.get("site"), channel=channel)
+        except SyntaxError: 
+            self._post("that's some invalid syntax my dude", channel=channel)
 
     def _list_sites(self, channel):
         sites_str = ""
@@ -223,11 +247,12 @@ if __name__ == "__main__":
     pukeko = PukekoBot("#start", "authc00de", is_connecting=False)
     # pukeko.process_message("#test", "nothing")
     # pukeko.process_message("#test", "pukeko")
-    pukeko.process_message("#test", "hi pukeko")
-    pukeko.process_message("#test", "pukeko status")
+    # pukeko.process_message("#test", "hi pukeko")
+    # pukeko.process_message("#test", "pukeko status")
     pukeko.process_message("#test", "pukeko list")
-
-    pukeko.run_status_poll()
+    pukeko.process_message("#test", "pukeko remove -12")
+    pukeko.process_message("#test", "pukeko remove x")
+    # pukeko.run_status_poll()
     # pukeko.process_message("#test", "pukeko status")
     # pukeko.process_message("#test", "pukeko add \"google.com\" \"description here\" true")
     # pukeko.process_message("#test", "pukeko add \"false.com\" \"false here\" false")
