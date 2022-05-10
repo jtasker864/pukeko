@@ -45,6 +45,7 @@ def message(payload):
 
 def poll_sites():
     print("Polling")
+    
 
 
 def poll_regularly():
