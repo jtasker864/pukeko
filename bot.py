@@ -8,13 +8,15 @@ import json
 
 class PukekoBot:
     
-    def __init__(self, start_channel, token, connect=True):
+    #Starts the bot by creating a sites.json file if none is there and posting "ayo"
+    def __init__(self, start_channel, token, is_connecting=True):
         self._check_sites_file()
-        self.connect = connect
-        if connect:
+        if is_connecting:
             self.web_client = WebClient(token=token)
-        payload = self._get_payload(start_channel, ["ayo"])
-        self._send_payload(payload)
+        else:
+            self.web_client = None
+        self.start_channel = start_channel
+        self._post("ayo")
 
     #JSON reading / writing
     def _check_sites_file(self):
@@ -24,7 +26,8 @@ class PukekoBot:
         except FileNotFoundError:
             self._create_sites_file()
             f = open("sites.json")
-        self._update_sites(f)
+        data = json.load(f)
+        self.sites = data.get("sites")
 
     def _create_sites_file(self):
         print("CREATING JSON SITES FILE")
@@ -34,10 +37,6 @@ class PukekoBot:
                         "test-regularly": True
                     }]
         self._write_sites()
-    
-    def _update_sites(self, file):
-        data = json.load(file)
-        self.sites = data.get("sites")
 
     def _write_sites(self):
         print("SAVING JSON SITES FILE")
@@ -49,6 +48,15 @@ class PukekoBot:
             json.dump(content, outfile, indent=4)
 
     #Basic messaging functionality
+
+    #Posts the lines given to the channel
+    #Each line is treated as a paragraph, for small line breaks use \n in the string
+    def _post(self, *paragraphs, channel=None):
+        if channel == None:
+            channel = self.start_channel
+        payload = self._get_payload(channel, paragraphs)
+        self._send_payload(payload)
+        
     
     def _get_message_block(self, message):
         return {"type": "section", "text": {"type": "mrkdwn", "text": message}}
@@ -56,11 +64,12 @@ class PukekoBot:
     def _get_payload(self, channel, messages):
         return {
             "channel": channel,
+            "is_app_unfurl": False,
             "blocks": [self._get_message_block(message) for message in messages],
         }
     
     def _send_payload(self, payload):
-        if self.connect:
+        if self.web_client != None:
             self.web_client.chat_postMessage(**payload)
         else:
             print(payload)
@@ -83,12 +92,10 @@ class PukekoBot:
         for site in self.sites:
             status = self._test_site_status(site.get("site"))
             statuses += site.get("site") + ': ' + status + "\n"
-        payload = self._get_payload(channel, ["Server Statuses:", statuses])
-        self._send_payload(payload)
+        self._post("Server Statuses:", statuses, channel=channel)
 
     def _say_hi(self, channel):
-        payload = self._get_payload(channel, ["Hi <3"])
-        self._send_payload(payload)
+        self._post("Hi <3", channel=channel)
 
     def _make_site_json(self, site, description, check_regularly):
         return \
@@ -116,7 +123,6 @@ class PukekoBot:
         description = text[after_last_quote:pointer]
         pointer += 2
         check_regularly_str = text[pointer:].lower()
-        print(check_regularly_str)
         if check_regularly_str != "true" and check_regularly_str != "false":
             raise SyntaxError
         check_regularly = bool(text[pointer:])
@@ -129,11 +135,9 @@ class PukekoBot:
             new_site = self._make_site_json(site, description, check_regularly)
             self.sites.append(new_site)
             self._write_sites()
-            payload = self._get_payload(channel, ["Added " + site])
-            self._send_payload(payload)
+            self._post("Added " + site, channel=channel)
         except SyntaxError: 
-            payload = self._get_payload(channel, ["that's some invalid syntax my dude"])
-            self._send_payload(payload)
+            self._post("that's some invalid syntax my dude", channel=channel)
         
     def _list_sites(self, channel):
         sites_str = ""
@@ -144,8 +148,7 @@ class PukekoBot:
             else:
                 sites_str += "Not checking"
             sites_str += "\n"
-        payload = self._get_payload(channel, ["Sites:", sites_str])
-        self._send_payload(payload)
+        self._post("Sites:", sites_str, channel=channel)
 
     #Public functions
 
@@ -160,7 +163,7 @@ class PukekoBot:
             self._list_sites(channel)
 
 if __name__ == "__main__":
-    pukeko = PukekoBot("#start", "authc00de", connect=False)
+    pukeko = PukekoBot("#start", "authc00de", is_connecting=False)
     pukeko.process_message("#test", "nothing")
     pukeko.process_message("#test", "pukeko")
     pukeko.process_message("#test", "hi pukeko")
