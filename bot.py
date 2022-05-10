@@ -109,7 +109,6 @@ class PukekoBot:
             self._post("A poll at " + now_str + " found these sites down:", statuses)
             return False
         else:
-            print("All up")
             return True
 
     def _status_string(self, site, status):
@@ -242,7 +241,7 @@ class PukekoBot:
         self._post("Stopping polling")
 
     def start_polling(self):
-        print("Starting polling")
+        self._post("Starting polling")
         self.polling = True
         poller = Process(target = self._poll_regularly)
         poller.start()

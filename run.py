@@ -21,7 +21,7 @@ app = Flask(__name__)
 # Create an events adapter and register it to an endpoint in the slack app for event ingestion.
 slack_events_adapter = SlackEventAdapter(signing, server=app)
 
-pukeko = PukekoBot(start_channel, oauth, is_connecting=False)
+pukeko = PukekoBot(start_channel, oauth)
 
 # When a 'message' event is detected by the events adapter, forward that payload
 # to this function.
