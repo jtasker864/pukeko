@@ -12,19 +12,24 @@ from multiprocessing import Process
 class PukekoBot:
     
     #Starts the bot by creating a sites.json file if none is there and posting "ayo"
-    def __init__(self, start_channel, token, is_connecting=True, is_polling=False, debug=False):
-        self.polling = is_polling
+    def __init__(self, start_channel, token, debug=False):
+        self.polling = False
+        self.debug = debug
         self._check_sites_file()
-        if is_connecting:
+        self.web_client = None
+        if not debug:
             self.web_client = WebClient(token=token)
-        else:
-            self.web_client = None
         self.start_channel = start_channel
         self._post("ayo")
-        if(debug):
-            while True:
-                message = input()
-                self.process_message("Debug", message)
+        if debug:
+            self._start_debug()
+    
+    def _start_debug(self):
+        self.debug_running = True
+        while self.debug_running:
+            message = input()
+            self.process_message("Debug", message)
+        self._post("Debug exited")
 
     #JSON reading / writing
     def _check_sites_file(self):
@@ -60,7 +65,7 @@ class PukekoBot:
     #Posts the lines given to the channel
     #Each line is treated as a paragraph, for small line breaks use \n in the string
     def _post(self, *paragraphs, channel=None):
-        if self.web_client == None:
+        if self.debug:
             for paragraph in paragraphs:
                 print(paragraph)
             return
@@ -81,10 +86,7 @@ class PukekoBot:
         }
     
     def _send_payload(self, payload):
-        if self.web_client != None:
-            self.web_client.chat_postMessage(**payload)
-        else:
-            print(payload)
+        self.web_client.chat_postMessage(**payload)
 
     #Specific command functionality
 
@@ -269,9 +271,11 @@ class PukekoBot:
             self._list_sites(channel)
         elif text == "pukeko poll":
             self.start_polling()
+        elif text == "exit":
+            self.debug_running = False
 
 if __name__ == "__main__": #Means we're debugging
-    pukeko = PukekoBot("#start", "authc00de", is_connecting=False, debug=True)
+    pukeko = PukekoBot("#start", "authc00de", debug=True)
     # pukeko.process_message("#test", "nothing")
     # pukeko.process_message("#test", "pukeko")
     # pukeko.process_message("#test", "hi pukeko")
