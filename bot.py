@@ -12,7 +12,7 @@ from multiprocessing import Process
 class PukekoBot:
     
     #Starts the bot by creating a sites.json file if none is there and posting "ayo"
-    def __init__(self, start_channel, token, is_connecting=True, is_polling=False):
+    def __init__(self, start_channel, token, is_connecting=True, is_polling=False, debug=False):
         self.polling = is_polling
         self._check_sites_file()
         if is_connecting:
@@ -21,6 +21,10 @@ class PukekoBot:
             self.web_client = None
         self.start_channel = start_channel
         self._post("ayo")
+        if(debug):
+            while True:
+                message = input()
+                self.process_message("Debug", message)
 
     #JSON reading / writing
     def _check_sites_file(self):
@@ -56,6 +60,10 @@ class PukekoBot:
     #Posts the lines given to the channel
     #Each line is treated as a paragraph, for small line breaks use \n in the string
     def _post(self, *paragraphs, channel=None):
+        if self.web_client == None:
+            for paragraph in paragraphs:
+                print(paragraph)
+            return
         if channel == None:
             channel = self.start_channel
         payload = self._get_payload(channel, paragraphs)
@@ -240,13 +248,13 @@ class PukekoBot:
             self.polling = self.run_status_poll()
         self._post("Stopping polling")
 
+    #Public functions
+
     def start_polling(self):
         self._post("Starting polling")
         self.polling = True
         poller = Process(target = self._poll_regularly)
         poller.start()
-
-    #Public functions
 
     def process_message(self, channel, text):
         if text == "hi pukeko":
@@ -262,16 +270,16 @@ class PukekoBot:
         elif text == "pukeko poll":
             self.start_polling()
 
-if __name__ == "__main__":
-    pukeko = PukekoBot("#start", "authc00de", is_connecting=False)
+if __name__ == "__main__": #Means we're debugging
+    pukeko = PukekoBot("#start", "authc00de", is_connecting=False, debug=True)
     # pukeko.process_message("#test", "nothing")
     # pukeko.process_message("#test", "pukeko")
     # pukeko.process_message("#test", "hi pukeko")
     # pukeko.process_message("#test", "pukeko status")
-    pukeko.process_message("#test", "pukeko list")
-    pukeko.process_message("#test", "pukeko poll")
-    # pukeko.start_polling("#test")
-    time.sleep(600)
+    # pukeko.process_message("#test", "pukeko list")
+    # pukeko.process_message("#test", "pukeko poll")
+    # # pukeko.start_polling("#test")
+    # time.sleep(600)
     # pukeko.process_message("#test", "pukeko remove -12")
     # pukeko.process_message("#test", "pukeko remove x")
     # pukeko.run_status_poll()
