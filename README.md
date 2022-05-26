@@ -22,3 +22,15 @@ python3 run.py
 Should close and create a config.txt file eventually to add tokens to manually
 
 Add the parameters and ADD TO THE CHANNEL MENTIONED
+
+# sites.json
+
+# poll-status
+This tag contains the 'polling state' of the site
+"Working": The site is operational and not returning a URL or HTTP error
+"Error 0": The site just had an error, and notifies the chat once
+"Error 5": The site is polled again in 15 minutes
+"Error 10": 10 min poll
+"Down": 15 minute poll was done with no results found - polling is then paused and another notification is sent
+
+Any non-error polls return the status to "Working"

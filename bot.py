@@ -47,7 +47,8 @@ class PukekoBot:
         self.sites = [{
                         "site": "https://urbanintelligence.co.nz/",
                         "description": "Our main wordpress page",
-                        "test-regularly": True
+                        "test-regularly": True,
+                        "poll-status": "Working"
                     }]
         self._write_sites()
 
@@ -146,7 +147,8 @@ class PukekoBot:
             {
                 "site": site,
                 "description": description,
-                "test-regularly": check_regularly
+                "test-regularly": check_regularly,
+                "poll-status": "Working"
             }
 
     #Reads a sting of form "pukeko add "SITE" "DESCRIPTION" CHECKREGULARLY"
