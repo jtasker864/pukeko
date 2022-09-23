@@ -5,9 +5,7 @@ from urllib.error import *
 from xml.dom import SyntaxErr
 from slack import WebClient
 import json
-from datetime import datetime
-import time
-from multiprocessing import Process
+from datetime import datetime, timedelta
 
 class PukekoBot:
     
@@ -15,12 +13,14 @@ class PukekoBot:
     def __init__(self, start_channel, token, debug=False):
         self.polling = False
         self.debug = debug
+        self.status_payload = None
+        self.status_response = None
+        self.sleeptime = 10
         self._check_sites_file()
         self.web_client = None
         if not debug:
             self.web_client = WebClient(token=token)
         self.start_channel = start_channel
-        self._post("ayo")
         if debug:
             self._start_debug()
     
@@ -66,10 +66,6 @@ class PukekoBot:
     #Posts the lines given to the channel
     #Each line is treated as a paragraph, for small line breaks use \n in the string
     def _post(self, *paragraphs, channel=None):
-        if self.debug:
-            for paragraph in paragraphs:
-                print(paragraph)
-            return
         if channel == None:
             channel = self.start_channel
         payload = self._get_payload(channel, paragraphs)
@@ -87,16 +83,27 @@ class PukekoBot:
         }
     
     def _edit_payload(self, payload, response, messages):
+        payload["blocks"] = [self._get_message_block(message) for message in messages]
+        if self.debug:
+            return payload
         payload["ts"] = response.get("ts")
         payload["channel"] = response.get("channel")
-        payload["blocks"] = [self._get_message_block(message) for message in messages]
         return payload
     
     def _send_payload(self, payload):
+        #print(payload)
+        if self.debug:
+            for paragraph in (block.get("text").get("text") for block in payload.get("blocks")):
+                print(paragraph)
+            return
         response = self.web_client.chat_postMessage(**payload)
         return response
 
     def _send_payload_edit(self, payload):
+        if self.debug:
+            for paragraph in (block.get("text").get("text") for block in payload.get("blocks")):
+                print("EDIT: " + paragraph)
+            return
         self.web_client.chat_update(**payload)
 
     #Specific command functionality
@@ -137,9 +144,9 @@ class PukekoBot:
         if status == 200:
             message = site.get("site") + ": :large_green_circle: Working fine"
         elif status == None:
-            message = site.get("site") + ": :red_circle: *URL ERROR*"
+            message = "*URL ERROR* :" + site.get("site") + " - " + site.get("description")
         else:
-            message = site.get("site") + ": :red_circle: *HTTP ERROR " + str(status) + "*"
+            message = "*HTTP ERROR " + str(status) + "* :" + site.get("site") + " - " + site.get("description")
         return message
 
     def _list_statuses(self, channel):
@@ -151,6 +158,36 @@ class PukekoBot:
 
     def _say_hi(self, channel):
         self._post("Hi <3", channel=channel)
+
+    def _get_statuses(self):
+        now = datetime.now()
+        next = now + timedelta(seconds=self.sleeptime)
+        broken_sites = []
+        for site in self.sites:
+            status = self._test_site_status(site.get("site"))
+            if status != 200:
+                broken_sites.append((site, status))
+        messages = []
+        if len(broken_sites) == 0:
+            messages.append(":large_green_circle: All sites seem healthy. All is good! :large_green_circle:")
+        else:
+            messages.append(f":red_circle: {len(broken_sites)} site(s) were found to be down :red_circle:")
+            statuses = ""
+            for i, (site, status) in enumerate(broken_sites):
+                statuses += str(i+1) + ") " + self._status_string(site, status) + "\n"
+            messages.append(statuses)
+        messages.append(now.strftime("Checked on %d/%m/%y at %I:%M:%S %p") + "\n" +\
+            next.strftime("Next poll due at %I:%M:%S %p"))
+        #print(messages)
+        return messages
+
+    def _update_status(self, channel):
+        if self.status_payload == None:
+            self.status_payload = self._get_payload(channel, self._get_statuses())
+            self.status_response = self._send_payload(self.status_payload)
+        else:
+            self.status_payload = self._edit_payload(self.status_payload, self.status_response, self._get_statuses())
+            self._send_payload_edit(self.status_payload)
 
     def _make_site_json(self, site, description, check_regularly):
         return \
@@ -255,39 +292,26 @@ class PukekoBot:
             sites_str += "\n"
         self._post("Sites:", sites_str, channel=channel)
 
-    def _poll_regularly(self):
-        self.polling = self.run_status_poll()
-        while self.polling:
-            time.sleep(10)
-            self.polling = self.run_status_poll()
-        self._post("Stopping polling")
-
     #Public functions
-
-    def start_polling(self):
-        self._post("Starting polling")
-        self.polling = True
-        poller = Process(target = self._poll_regularly)
-        poller.start()
 
     def process_message(self, channel, text):
         if text == "hi pukeko":
             self._say_hi(channel)
         elif text == "pukeko status":
-            self._list_statuses(channel)
-        elif text.startswith("pukeko add "):
-            self._add_site(channel, text)
-        elif text.startswith("pukeko remove "):
-            self._remove_site(channel, text)
-        elif text == "pukeko list":
-            self._list_sites(channel)
-        elif text == "pukeko poll":
-            self.start_polling()
+            self._update_status(channel)
+        # elif text.startswith("pukeko add "):
+        #     self._add_site(channel, text)
+        # elif text.startswith("pukeko remove "):
+        #     self._remove_site(channel, text)
+        # elif text == "pukeko list":
+        #     self._list_sites(channel)
+        # elif text == "pukeko poll":
+        #     self.start_polling()
         elif text == "exit":
             self.debug_running = False
 
 if __name__ == "__main__": #Means we're debugging
-    pukeko = PukekoBot("#start", "authc00de", debug=True)    
+    pukeko = PukekoBot("#start", "authc00de", debug=True)
     # pukeko.process_message("#test", "nothing")
     # pukeko.process_message("#test", "pukeko")
     # pukeko.process_message("#test", "hi pukeko")

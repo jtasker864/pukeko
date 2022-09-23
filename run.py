@@ -3,6 +3,8 @@ from flask import Flask
 # from slack import WebClient
 from slackeventsapi import SlackEventAdapter
 from bot import PukekoBot
+from multiprocessing import Process
+import time
 
 def read_config():
     config_file = open("config.txt")
@@ -41,32 +43,44 @@ def message(payload):
     if text is not None and "pukeko" in text.lower():
         return pukeko.process_message(channel_id, text)
 
+def start_polling():
+    pukeko.polling = True
+    poller = Process(target = poll_regularly, args=(pukeko,))
+    poller.start()
+
+def poll_regularly(bot):
+    while bot.polling:
+        bot._update_status(start_channel)
+        time.sleep(bot.sleeptime)
+
 if __name__ == "__main__":
-    #pukeko.start_polling()
-    import time
-    payload = pukeko._get_payload("#site-status", ["editing me"])
-    response = pukeko._send_payload(payload)
-    print(payload)
-    print()
-    print()
-    print(response)
-    print()
-    print()
-    time.sleep(10)
-    payload = pukeko._edit_payload(payload, response, ["edited"])
-    print(payload)
-    pukeko._send_payload_edit(payload)
-
-    # Create the logging object
-    logger = logging.getLogger()
-
-    # Set the log level to DEBUG. This will increase verbosity of logging messages
-    logger.setLevel(logging.DEBUG)
-
-    # Add the StreamHandler as a logging handler
-    logger.addHandler(logging.StreamHandler())
-
+    pukeko._post("ayo")
+    start_polling()
+    
     # Run your app on your externally facing IP address on port 3000 instead of
     # running it on localhost, which is traditional for development.
     app.run(host='0.0.0.0', port=3000)
     print("Closed Flask")
+
+    # import time
+    # payload = pukeko._get_payload("#site-status", ["editing me"])
+    # response = pukeko._send_payload(payload)
+    # print(payload)
+    # print()
+    # print()
+    # print(response)
+    # print()
+    # print()
+    # time.sleep(10)
+    # payload = pukeko._edit_payload(payload, response, ["edited"])
+    # print(payload)
+    # pukeko._send_payload_edit(payload)
+
+    # Create the logging object
+    # logger = logging.getLogger()
+
+    # # Set the log level to DEBUG. This will increase verbosity of logging messages
+    # logger.setLevel(logging.DEBUG)
+
+    # # Add the StreamHandler as a logging handler
+    # logger.addHandler(logging.StreamHandler())
