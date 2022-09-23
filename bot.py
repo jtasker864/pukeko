@@ -86,9 +86,18 @@ class PukekoBot:
             "blocks": [self._get_message_block(message) for message in messages],
         }
     
+    def _edit_payload(self, payload, response, messages):
+        payload["ts"] = response.get("ts")
+        payload["channel"] = response.get("channel")
+        payload["blocks"] = [self._get_message_block(message) for message in messages]
+        return payload
+    
     def _send_payload(self, payload):
         response = self.web_client.chat_postMessage(**payload)
-        print(response)
+        return response
+
+    def _send_payload_edit(self, payload):
+        self.web_client.chat_update(**payload)
 
     #Specific command functionality
 
@@ -277,8 +286,8 @@ class PukekoBot:
         elif text == "exit":
             self.debug_running = False
 
-# if __name__ == "__main__": #Means we're debugging
-#     pukeko = PukekoBot("#start", "authc00de", debug=True)
+if __name__ == "__main__": #Means we're debugging
+    pukeko = PukekoBot("#start", "authc00de", debug=True)    
     # pukeko.process_message("#test", "nothing")
     # pukeko.process_message("#test", "pukeko")
     # pukeko.process_message("#test", "hi pukeko")

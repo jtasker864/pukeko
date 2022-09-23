@@ -43,6 +43,19 @@ def message(payload):
 
 if __name__ == "__main__":
     #pukeko.start_polling()
+    import time
+    payload = pukeko._get_payload("#site-status", ["editing me"])
+    response = pukeko._send_payload(payload)
+    print(payload)
+    print()
+    print()
+    print(response)
+    print()
+    print()
+    time.sleep(10)
+    payload = pukeko._edit_payload(payload, response, ["edited"])
+    print(payload)
+    pukeko._send_payload_edit(payload)
 
     # Create the logging object
     logger = logging.getLogger()
