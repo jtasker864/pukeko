@@ -25,9 +25,11 @@ It should close and create a config.txt file.
 
 ## config.txt
 The config should be formatted as follows:
+```
 starting-channel: #example-channel
 oauth-token: [insert here]
 signing-secret: [insert here]
+```
 
 ## sites.json
 The basic format will be generated when the bot is first run. It should be easy to configure this if you know .json's format.

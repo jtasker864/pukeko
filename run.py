@@ -42,7 +42,7 @@ def message(payload):
         return pukeko.process_message(channel_id, text)
 
 if __name__ == "__main__":
-    pukeko.start_polling()
+    #pukeko.start_polling()
 
     # Create the logging object
     logger = logging.getLogger()

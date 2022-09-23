@@ -87,7 +87,8 @@ class PukekoBot:
         }
     
     def _send_payload(self, payload):
-        self.web_client.chat_postMessage(**payload)
+        response = self.web_client.chat_postMessage(**payload)
+        print(response)
 
     #Specific command functionality
 
@@ -276,8 +277,8 @@ class PukekoBot:
         elif text == "exit":
             self.debug_running = False
 
-if __name__ == "__main__": #Means we're debugging
-    pukeko = PukekoBot("#start", "authc00de", debug=True)
+# if __name__ == "__main__": #Means we're debugging
+#     pukeko = PukekoBot("#start", "authc00de", debug=True)
     # pukeko.process_message("#test", "nothing")
     # pukeko.process_message("#test", "pukeko")
     # pukeko.process_message("#test", "hi pukeko")
