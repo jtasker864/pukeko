@@ -15,13 +15,14 @@ class PukekoBot:
         self.debug = debug
         self.status_payload = None
         self.status_response = None
-        self.sleeptime = 10
+        self.sleeptime = 60*5
         self._check_sites_file()
         self.web_client = None
         if not debug:
             self.web_client = WebClient(token=token)
         self.start_channel = start_channel
         if debug:
+            self._post("ayo")
             self._start_debug()
     
     def _start_debug(self):
@@ -46,9 +47,7 @@ class PukekoBot:
         print("CREATING JSON SITES FILE")
         self.sites = [{
                         "site": "https://urbanintelligence.co.nz/",
-                        "description": "Our main wordpress page",
-                        "test-regularly": True,
-                        "poll-status": "Working"
+                        "description": "Our main wordpress page"
                     }]
         self._write_sites()
 
@@ -125,10 +124,8 @@ class PukekoBot:
         now_str = now.strftime("%d/%m/%Y %H:%M:%S")
         broken_sites = []
         for site in self.sites:
-            if not site.get("test-regularly"):
-                continue
             status = self._test_site_status(site.get("site"))
-            if status != 200:
+            if status not in [200, 401]:
                 broken_sites.append((site, status))
         if len(broken_sites) > 0:
             statuses = ""
@@ -165,7 +162,7 @@ class PukekoBot:
         broken_sites = []
         for site in self.sites:
             status = self._test_site_status(site.get("site"))
-            if status != 200:
+            if status not in [200, 401]:
                 broken_sites.append((site, status))
         messages = []
         if len(broken_sites) == 0:
@@ -193,9 +190,7 @@ class PukekoBot:
         return \
             {
                 "site": site,
-                "description": description,
-                "test-regularly": check_regularly,
-                "poll-status": "Working"
+                "description": description
             }
 
     #Reads a sting of form "pukeko add "SITE" "DESCRIPTION" CHECKREGULARLY"
@@ -284,11 +279,7 @@ class PukekoBot:
     def _list_sites(self, channel):
         sites_str = ""
         for i, site in enumerate(self.sites):
-            sites_str += str(i+1) + ": " + site.get("site") + " - " + site.get("description") + " - "
-            if site.get("test-regularly"):
-                sites_str += "Checking regularly"
-            else:
-                sites_str += "Not checking"
+            sites_str += str(i+1) + ": " + site.get("site") + " - " + site.get("description")
             sites_str += "\n"
         self._post("Sites:", sites_str, channel=channel)
 
@@ -303,8 +294,8 @@ class PukekoBot:
         #     self._add_site(channel, text)
         # elif text.startswith("pukeko remove "):
         #     self._remove_site(channel, text)
-        # elif text == "pukeko list":
-        #     self._list_sites(channel)
+        elif text == "pukeko list":
+            self._list_sites(channel)
         # elif text == "pukeko poll":
         #     self.start_polling()
         elif text == "exit":
