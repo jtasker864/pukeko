@@ -182,6 +182,7 @@ class PukekoBot:
             if self.are_sites_down == False:
                 self.are_sites_down = True
                 self._post("<!channel> it seems a site has gone down :(")
+                resend = True
         messages.append(now.strftime("Checked on %d/%m/%y at %I:%M:%S %p") + "\n" +\
             next.strftime("Next poll due at %I:%M:%S %p"))
         return messages, resend
