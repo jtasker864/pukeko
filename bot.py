@@ -16,6 +16,7 @@ class PukekoBot:
         self.status_payload = None
         self.status_response = None
         self.sleeptime = 60*5
+        self.are_sites_down = False
         self._check_sites_file()
         self.web_client = None
         if not debug:
@@ -143,7 +144,7 @@ class PukekoBot:
         elif status == None:
             message = "*URL ERROR* :" + site.get("site") + " - " + site.get("description")
         else:
-            message = "*HTTP ERROR " + str(status) + "* :" + site.get("site") + " - " + site.get("description")
+            message = "*HTTP ERROR " + str(status) + "*: " + site.get("site") + " - " + site.get("description")
         return message
 
     def _list_statuses(self, channel):
@@ -167,15 +168,18 @@ class PukekoBot:
         messages = []
         if len(broken_sites) == 0:
             messages.append(":large_green_circle: All sites seem healthy. All is good! :large_green_circle:")
+            self.are_sites_down = False
         else:
             messages.append(f":red_circle: {len(broken_sites)} site(s) were found to be down :red_circle:")
             statuses = ""
             for i, (site, status) in enumerate(broken_sites):
                 statuses += str(i+1) + ") " + self._status_string(site, status) + "\n"
             messages.append(statuses)
+            if self.are_sites_down == False:
+                self.are_sites_down = True
+                self._post("<!here> it seems a site has gone down :(")
         messages.append(now.strftime("Checked on %d/%m/%y at %I:%M:%S %p") + "\n" +\
             next.strftime("Next poll due at %I:%M:%S %p"))
-        #print(messages)
         return messages
 
     def _update_status(self, channel):
