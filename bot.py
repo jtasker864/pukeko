@@ -158,6 +158,7 @@ class PukekoBot:
         self._post("Hi <3", channel=channel)
 
     def _get_statuses(self):
+        resend = False
         now = datetime.now()
         next = now + timedelta(seconds=self.sleeptime)
         broken_sites = []
@@ -171,6 +172,7 @@ class PukekoBot:
             if self.are_sites_down == True:
                 self.are_sites_down = False
                 self._post("All sites are healthy again :)")
+                resend = True
         else:
             messages.append(f":red_circle: {len(broken_sites)} site(s) were found to be down :red_circle:")
             statuses = ""
@@ -182,14 +184,15 @@ class PukekoBot:
                 self._post("<!channel> it seems a site has gone down :(")
         messages.append(now.strftime("Checked on %d/%m/%y at %I:%M:%S %p") + "\n" +\
             next.strftime("Next poll due at %I:%M:%S %p"))
-        return messages
+        return messages, resend
 
     def _update_status(self, channel):
-        if self.status_payload == None:
-            self.status_payload = self._get_payload(channel, self._get_statuses())
+        statuses, resend = self._get_statuses()
+        if self.status_payload == None or resend:
+            self.status_payload = self._get_payload(channel, statuses)
             self.status_response = self._send_payload(self.status_payload)
         else:
-            self.status_payload = self._edit_payload(self.status_payload, self.status_response, self._get_statuses())
+            self.status_payload = self._edit_payload(self.status_payload, self.status_response, statuses)
             self._send_payload_edit(self.status_payload)
 
     def _make_site_json(self, site, description, check_regularly):
