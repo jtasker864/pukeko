@@ -168,7 +168,9 @@ class PukekoBot:
         messages = []
         if len(broken_sites) == 0:
             messages.append(":large_green_circle: All sites seem healthy. All is good! :large_green_circle:")
-            self.are_sites_down = False
+            if self.are_sites_down == True:
+                self.are_sites_down = False
+                self._post("All sites are healthy again :)")
         else:
             messages.append(f":red_circle: {len(broken_sites)} site(s) were found to be down :red_circle:")
             statuses = ""
@@ -177,7 +179,7 @@ class PukekoBot:
             messages.append(statuses)
             if self.are_sites_down == False:
                 self.are_sites_down = True
-                self._post("<!here> it seems a site has gone down :(")
+                self._post("<!channel> it seems a site has gone down :(")
         messages.append(now.strftime("Checked on %d/%m/%y at %I:%M:%S %p") + "\n" +\
             next.strftime("Next poll due at %I:%M:%S %p"))
         return messages
@@ -294,6 +296,8 @@ class PukekoBot:
             self._say_hi(channel)
         elif text == "pukeko status":
             self._update_status(channel)
+        elif text == "pukeko reload":
+            self._check_sites_file()
         # elif text.startswith("pukeko add "):
         #     self._add_site(channel, text)
         # elif text.startswith("pukeko remove "):
