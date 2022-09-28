@@ -184,7 +184,9 @@ class PukekoBot:
                 self.are_sites_down = True
                 self._post("<!channel> it seems a site has gone down :(")
                 resend = True
-        botname = " ".join(self.sysargs[1:])
+        botname = "unnamed"
+        if len(self.sysargs) > 1:
+            botname = " ".join(self.sysargs[1:])
         messages.append("Checked by " + botname + "\n" +\
             now.strftime("Checked on %d/%m/%y at %I:%M:%S %p") + "\n" +\
             next.strftime("Next poll due at %I:%M:%S %p"))

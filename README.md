@@ -11,7 +11,7 @@ python3 get-pip.py
 python3 -m pip install slackclient slackeventsapi Flask
 cd pukeko
 [create config.txt formatted as shown below]
-python3 run.py
+python3 run.py [Bot name here]
 ```
 Make sure you create a config.txt file before running.
 
