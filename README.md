@@ -59,3 +59,74 @@ This tag contains the 'polling state' of the site
 
 Any non-error polls return the status to "Working"
 
+# Extended Site List as of September
+```
+{
+    "sites": [
+        {
+            "site": "https://urbanintelligence.co.nz/",
+            "description": "Our main wordpress page"
+        },
+        {
+            "site": "https://urbanintelligence.co.nz/expertise/",
+            "description": "Our expertise page"
+        },
+        {
+            "site": "https://urbanintelligence.co.nz/news/",
+            "description": "Our news & research page"
+        },
+        {
+            "site": "https://urbanintelligence.co.nz/about/",
+            "description": "Our about us page"
+        },
+        {
+            "site": "https://urbanintelligence.co.nz/privacy-policy/",
+            "description": "Our privacy policy page"
+        },
+        {
+            "site": "https://projects.urbanintelligence.co.nz/chap",
+            "description": "CHAP"
+        },
+        {
+            "site": "https://projects.urbanintelligence.co.nz/mrapple",
+            "description": "Mr Apple"
+        },
+        {
+            "site": "https://projects.urbanintelligence.co.nz/mrapple-jonz/",
+            "description": "JoNZ"
+        },
+        {
+            "site": "https://projects.urbanintelligence.co.nz/wremo/",
+            "description": "WREMO"
+        },
+        {
+            "site": "https://projects.urbanintelligence.co.nz/scales/",
+            "description": "Scales Corp."
+        },
+        {
+            "site": "https://projects.urbanintelligence.co.nz/risk-intelligence-demo/",
+            "description": "Risk Intelligence Demo"
+        },
+        {
+            "site": "https://projects.urbanintelligence.co.nz/access-resilience/",
+            "description": "Access Resilience"
+        },
+        {
+            "site": "https://projects.urbanintelligence.co.nz/chap-public/",
+            "description": "CHAP public (unsure what this is for)"
+        },
+        {
+            "site": "https://projects.urbanintelligence.co.nz/nz-coastal-risk/",
+            "description": "NZ Coastal Risk"
+        },
+        {
+            "site": "https://projects.urbanintelligence.co.nz/slr-usa/",
+            "description": "Sea Level Rise - USA"
+        },
+        {
+            "site": "https://projects.urbanintelligence.co.nz/x-minute-city/",
+            "description": "The 10 Minute City"
+        }
+    ]
+}
+```
