@@ -9,9 +9,11 @@ git clone https://github.com/jtasker864/pukeko.git
 wget https://bootstrap.pypa.io/pip/3.6/get-pip.py
 python3 get-pip.py
 python3 -m pip install slackclient slackeventsapi Flask
-python3 python3 pukeko/run.py
+cd pukeko
+[create config.txt formatted as shown below]
+python3 run.py
 ```
-It should close and create a config.txt file.
+Make sure you create a config.txt file before running.
 
 ## Configure the bot
 - Go to https://api.slack.com and make a new bot, setup name and image.
