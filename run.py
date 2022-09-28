@@ -5,6 +5,7 @@ from slackeventsapi import SlackEventAdapter
 from bot import PukekoBot
 from multiprocessing import Process
 import time
+import sys
 
 def read_config():
     config_file = open("config.txt")
@@ -23,7 +24,7 @@ app = Flask(__name__)
 # Create an events adapter and register it to an endpoint in the slack app for event ingestion.
 slack_events_adapter = SlackEventAdapter(signing, server=app)
 
-pukeko = PukekoBot(start_channel, oauth)
+pukeko = PukekoBot(start_channel, oauth, sys.argv)
 
 # When a 'message' event is detected by the events adapter, forward that payload
 # to this function.

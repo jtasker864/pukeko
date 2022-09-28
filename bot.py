@@ -10,7 +10,8 @@ from datetime import datetime, timedelta
 class PukekoBot:
     
     #Starts the bot by creating a sites.json file if none is there and posting "ayo"
-    def __init__(self, start_channel, token, debug=False):
+    def __init__(self, start_channel, token, sysargs, debug=False):
+        self.sysargs = sysargs
         self.polling = False
         self.debug = debug
         self.status_payload = None
@@ -183,7 +184,9 @@ class PukekoBot:
                 self.are_sites_down = True
                 self._post("<!channel> it seems a site has gone down :(")
                 resend = True
-        messages.append(now.strftime("Checked on %d/%m/%y at %I:%M:%S %p") + "\n" +\
+        botname = " ".join(self.sysargs[1:])
+        messages.append("Checked by " + botname + "\n" +\
+            now.strftime("Checked on %d/%m/%y at %I:%M:%S %p") + "\n" +\
             next.strftime("Next poll due at %I:%M:%S %p"))
         return messages, resend
 
