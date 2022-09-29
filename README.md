@@ -41,10 +41,10 @@ signing-secret: [insert here]
 The basic format will be generated when the bot is first run. It should be easy to configure this if you know .json's format.
 
 # Commands
-### hi pukeko - To test if / which bot is listening to slack messages. It should reply with a message and its name.
-### pukeko status - Forces a status poll to happen now.
-### pukeko list - Lists all sites in sites.json.
-### pukeko reload - Reloads sites from sites.json.
+#### hi pukeko - To test if / which bot is listening to slack messages. It should reply with a message and its name.
+#### pukeko status - Forces a status poll to happen now.
+#### pukeko list - Lists all sites in sites.json.
+#### pukeko reload - Reloads sites from sites.json.
 
 # Code Documantation
 ## run.py
