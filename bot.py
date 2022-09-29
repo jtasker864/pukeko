@@ -162,7 +162,7 @@ class PukekoBot:
     def _say_hi(self, channel):
         self._post("Hi from " + self.botname + " <3", channel=channel)
 
-    def _get_statuses(self, nextpolltime=None):
+    def _get_statuses(self, nextpolltime=0):
         resend = False
         now = datetime.now()
         broken_sites = []
@@ -189,15 +189,13 @@ class PukekoBot:
                 resend = True
         messages.append("Checked by " + self.botname + "\n" +\
             now.strftime("Checked on %d/%m/%y at %I:%M:%S %p"))
-        if nextpolltime != None:
+        if nextpolltime != 0:
             self.nextpoll = now + timedelta(seconds=nextpolltime)
-        if self.nextpoll == None:
-            messages[-1] += "\n" + "No next poll queued"
-        else:
+        if self.nextpoll != None:
             messages[-1] += self.nextpoll.strftime("\n" + "Next poll due at %I:%M:%S %p")
         return messages, resend
 
-    def _update_status(self, channel, polltime=None):
+    def _update_status(self, channel, polltime=0):
         statuses, resend = self._get_statuses(nextpolltime=polltime)
         if self.status_payload == None or resend:
             self.status_payload = self._get_payload(channel, statuses)
