@@ -309,7 +309,7 @@ class PukekoBot:
         if text == "hi pukeko":
             self._say_hi(channel)
         elif text == "pukeko status":
-            self._update_status(channel, 3000)
+            self._update_status(channel)
         elif text == "pukeko reload":
             self._check_sites_file()
             self._post("Reloaded sites.json")
