@@ -51,7 +51,7 @@ def start_polling():
 
 def poll_regularly(bot):
     while bot.polling:
-        bot._update_status(start_channel)
+        bot._update_status(start_channel, polltime=bot.sleeptime)
         time.sleep(bot.sleeptime)
 
 if __name__ == "__main__":

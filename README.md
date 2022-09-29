@@ -36,28 +36,19 @@ signing-secret: [insert here]
 ## sites.json
 The basic format will be generated when the bot is first run. It should be easy to configure this if you know .json's format.
 
+# Commands
+### hi pukeko - To test if / which bot is listening to slack messages. It should reply with a message and its name.
+### pukeko status - Forces a status poll to happen now.
+### pukeko list - Lists all sites in sites.json.
+### pukeko reload - Reloads sites from sites.json.
+
 # Code Documantation
 ## run.py
 Starts a flask app to run the bot within.
 Manages all the event subscription messages from slack using Flask as the mini web server with slackeventsapi to process messages.
 
 ## bot.py
-Holds all the functions to process the commands pukekobot recieves.
-Commands:
-hi pukeko - replies to you
-pukeko status - Checks the statuses of online sites and posts the results
-pukeko add "SITE" "DESCRIPTION" CHECKREGULARLY
-pukeko list - lists sites
-
-# poll-status
-This tag contains the 'polling state' of the site
-"Working": The site is operational and not returning a URL or HTTP error
-"Error 0": The site just had an error, and notifies the chat once
-"Error 5": The site is polled again in 15 minutes
-"Error 10": 10 min poll
-"Down": 15 minute poll was done with no results found - polling is then paused and another notification is sent
-
-Any non-error polls return the status to "Working"
+Holds all the functions to process the commands pukekobot recieves. If run on it's own it will make a local bot that interacts with messages in a terminal.
 
 # Extended Site List as of September
 ```

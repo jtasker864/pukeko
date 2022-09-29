@@ -12,6 +12,10 @@ class PukekoBot:
     #Starts the bot by creating a sites.json file if none is there and posting "ayo"
     def __init__(self, start_channel, token, sysargs, debug=False):
         self.sysargs = sysargs
+        self.botname = "unnamed"
+        self.nextpoll = None
+        if len(self.sysargs) > 1:
+            self.botname = " ".join(self.sysargs[1:])
         self.polling = False
         self.debug = debug
         self.status_payload = None
@@ -156,12 +160,11 @@ class PukekoBot:
         self._post("Server Statuses:", statuses, channel=channel)
 
     def _say_hi(self, channel):
-        self._post("Hi <3", channel=channel)
+        self._post("Hi from " + self.botname + " <3", channel=channel)
 
-    def _get_statuses(self):
+    def _get_statuses(self, polltime=None):
         resend = False
         now = datetime.now()
-        next = now + timedelta(seconds=self.sleeptime)
         broken_sites = []
         for site in self.sites:
             status = self._test_site_status(site.get("site"))
@@ -184,12 +187,13 @@ class PukekoBot:
                 self.are_sites_down = True
                 self._post("<!channel> it seems a site has gone down :(")
                 resend = True
-        botname = "unnamed"
-        if len(self.sysargs) > 1:
-            botname = " ".join(self.sysargs[1:])
-        messages.append("Checked by " + botname + "\n" +\
-            now.strftime("Checked on %d/%m/%y at %I:%M:%S %p") + "\n" +\
-            next.strftime("Next poll due at %I:%M:%S %p"))
+        messages.append("Checked by " + self.botname + "\n" +\
+            now.strftime("Checked on %d/%m/%y at %I:%M:%S %p"))
+        if self.nextpoll == None:
+            self.nextpoll = now + timedelta(seconds=self.sleeptime)
+        if polltime != None:
+            self.nextpoll = now + timedelta(seconds=polltime)
+        messages[-1] += self.nextpoll.strftime("\n" + "Next poll due at %I:%M:%S %p")
         return messages, resend
 
     def _update_status(self, channel):
