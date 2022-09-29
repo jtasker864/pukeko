@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 
 class PukekoBot:
     
-    #Starts the bot by creating a sites.json file if none is there and posting "ayo"
+    #Starts the bot by creating a sites.json file if none is there
     def __init__(self, start_channel, token, sysargs, debug=False):
         self.sysargs = sysargs
         self.botname = "unnamed"
@@ -311,6 +311,7 @@ class PukekoBot:
             self._update_status(channel)
         elif text == "pukeko reload":
             self._check_sites_file()
+            self._post("Reloaded sites.json")
         # elif text.startswith("pukeko add "):
         #     self._add_site(channel, text)
         # elif text.startswith("pukeko remove "):

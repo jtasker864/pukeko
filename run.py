@@ -30,9 +30,6 @@ pukeko = PukekoBot(start_channel, oauth, sys.argv)
 # to this function.
 @slack_events_adapter.on("message")
 def message(payload):
-    """Parse the message event, and if the activation string is in the text,
-    simulate a coin flip and send the result.
-    """
     # Get the event data from the payload
     event = payload.get("event", {})
 
