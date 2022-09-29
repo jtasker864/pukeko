@@ -196,8 +196,8 @@ class PukekoBot:
         messages[-1] += self.nextpoll.strftime("\n" + "Next poll due at %I:%M:%S %p")
         return messages, resend
 
-    def _update_status(self, channel):
-        statuses, resend = self._get_statuses()
+    def _update_status(self, channel, polltime=None):
+        statuses, resend = self._get_statuses(polltime=polltime)
         if self.status_payload == None or resend:
             self.status_payload = self._get_payload(channel, statuses)
             self.status_response = self._send_payload(self.status_payload)
