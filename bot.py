@@ -189,11 +189,12 @@ class PukekoBot:
                 resend = True
         messages.append("Checked by " + self.botname + "\n" +\
             now.strftime("Checked on %d/%m/%y at %I:%M:%S %p"))
-        if self.nextpoll == None:
-            self.nextpoll = now + timedelta(seconds=self.sleeptime)
         if nextpolltime != None:
             self.nextpoll = now + timedelta(seconds=nextpolltime)
-        messages[-1] += self.nextpoll.strftime("\n" + "Next poll due at %I:%M:%S %p")
+        if self.nextpoll == None:
+            messages[-1] += "\n" + "No next poll queued"
+        else:
+            messages[-1] += self.nextpoll.strftime("\n" + "Next poll due at %I:%M:%S %p")
         return messages, resend
 
     def _update_status(self, channel, polltime=None):
@@ -308,7 +309,7 @@ class PukekoBot:
         if text == "hi pukeko":
             self._say_hi(channel)
         elif text == "pukeko status":
-            self._update_status(channel)
+            self._update_status(channel, 3000)
         elif text == "pukeko reload":
             self._check_sites_file()
             self._post("Reloaded sites.json")
@@ -324,7 +325,7 @@ class PukekoBot:
             self.debug_running = False
 
 if __name__ == "__main__": #Means we're debugging
-    pukeko = PukekoBot("#start", "authc00de", debug=True)
+    pukeko = PukekoBot("#start", "authc00de", ["run.py", "test bot"], debug=True)
     # pukeko.process_message("#test", "nothing")
     # pukeko.process_message("#test", "pukeko")
     # pukeko.process_message("#test", "hi pukeko")
