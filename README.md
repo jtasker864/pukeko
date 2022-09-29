@@ -11,7 +11,11 @@ python3 get-pip.py
 python3 -m pip install slackclient slackeventsapi Flask
 cd pukeko
 [create config.txt formatted as shown below]
+[use "screen" to create and independant screen]
 python3 run.py [Bot name here]
+[ctrl a+d to detach screen]
+[use "screen -r" to reattach screen when needed]
+[ctrl + c to close the bot]
 ```
 Make sure you create a config.txt file before running.
 
